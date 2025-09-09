@@ -1,0 +1,144 @@
+services:
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:latest
+    ports: ["4566:4566"]
+    environment: ["SERVICES=sqs,iam,sts,timestreamwrite,timestreamquery"]
+    volumes:
+      - localstack-data:/var/lib/localstack
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks:
+      - cronos-net
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      - POSTGRES_DB=cronos_db
+      - POSTGRES_USER=cronos_user
+      - POSTGRES_PASSWORD=cronos_password
+    ports: ["5432:5432"]
+    volumes: ["db-data:/var/lib/postgresql/data"]
+    networks:
+      - cronos-net
+
+  localstack-setup:
+    container_name: localstack-setup
+    build:
+      context: ./scripts
+    command: ["python", "setup_localstack.py"]
+    depends_on: [localstack]
+    environment: [AWS_ACCESS_KEY_ID=test, AWS_SECRET_ACCESS_KEY=test, AWS_DEFAULT_REGION=us-east-1]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks:
+      - cronos-net
+
+  edge-device:
+    container_name: edge-device
+    build: .
+    command: ["python", "-m", "cronos_ai.edge.edge_device_main"]
+    depends_on: [localstack-setup]
+    restart: on-failure
+    environment: [AWS_ACCESS_KEY_ID=test, AWS_SECRET_ACCESS_KEY=test, AWS_DEFAULT_REGION=us-east-1]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks:
+      - cronos-net
+
+  api-service:
+    container_name: api-service
+    build: .
+    command: ["uvicorn", "cronos_ai.central_cloud.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["8000:8000"]
+    depends_on: [timescaledb, localstack-setup]
+    restart: on-failure
+    environment:
+      - DB_HOST=timescaledb
+      - DB_NAME=cronos_db
+      - DB_USER=cronos_user
+      - DB_PASS=cronos_password
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks:
+      - cronos-net
+  
+  frontend-service:
+    container_name: frontend-service
+    build:
+      context: ./frontend
+    ports: ["5173:80"]
+    depends_on: [api-service]
+    networks:
+      - cronos-net
+
+  data-importer:
+    container_name: data-importer
+    build:
+      context: ./scripts
+    command: ["python", "import_nasa_data.py"]
+    volumes:
+      - ./data:/data
+    depends_on:
+      - timescaledb
+    environment:
+      - DB_HOST=timescaledb
+      - DB_NAME=cronos_db
+      - DB_USER=cronos_user
+      - DB_PASS=cronos_password
+    networks:
+      - cronos-net
+
+  notebook-service:
+    container_name: jupyter-notebook
+    image: jupyter/scipy-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - timescaledb
+    environment:
+      - DB_HOST=timescaledb
+      - DB_NAME=cronos_db
+      - DB_USER=cronos_user
+      - DB_PASS=cronos_password
+    networks:
+      - cronos-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports: ["3100:3100"]
+    networks:
+      - cronos-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on: [loki]
+    networks:
+      - cronos-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports: ["3000:3000"]
+    volumes: ["./grafana/provisioning:/etc/grafana/provisioning"]
+    depends_on: [loki]
+    networks:
+      - cronos-net
+
+volumes:
+  localstack-data:
+  db-data:
+
+networks:
+  cronos-net:
+    driver: bridge

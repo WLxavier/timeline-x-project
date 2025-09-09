@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv
+venv/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/npm-debug.log*
+/frontend/yarn-error.log*
+/frontend/.pnp/
+/frontend/.pnp.js
+.DS_Store
+Thumbs.db

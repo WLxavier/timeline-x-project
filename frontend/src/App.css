@@ -1,0 +1,67 @@
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+h1, h2 { color: #bb86fc; border-bottom: 2px solid #333; padding-bottom: 10px; }
+.container { max-width: 1400px; margin: auto; }
+.data-section { background-color: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.error-banner { background-color: #cf6679; color: #121212; padding: 15px; border-radius: 5px; font-weight: bold; margin-bottom: 20px; }
+
+.alerts-table { width: 100%; border-collapse: collapse; }
+.alerts-table th, .alerts-table td { padding: 12px 15px; border-bottom: 1px solid #333; text-align: left; }
+.alerts-table th { background-color: #2a2a2a; }
+.alerts-table tbody tr:hover { background-color: #2c2c2c; }
+
+.status { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; }
+.status-pending { background-color: #f39c12; color: #121212; }
+.status-confirmed_true { background-color: #2ecc71; color: #121212; }
+.status-confirmed_false { background-color: #e74c3c; color: #fff; }
+
+.actions { display: flex; gap: 10px; }
+.btn { border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-confirm { background-color: #27ae60; color: white; }
+.btn-false { background-color: #c0392b; color: white; }
+
+
+.dashboard-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.main-panel {
+  flex: 3;
+  min-width: 600px;
+}
+
+.side-panel {
+  flex: 1;
+  min-width: 300px;
+}
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.config-form label {
+  font-weight: bold;
+}
+
+.config-form small {
+  font-weight: normal;
+  color: #aaa;
+}
+
+.config-form input {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: #eee;
+  font-size: 1.1em;
+}
+
+.success-message {
+  color: #2ecc71;
+  font-weight: bold;
+  margin-top: 15px;
+}

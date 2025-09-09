@@ -1,0 +1,8 @@
+numpy
+boto3
+fastapi
+uvicorn[standard]
+pydantic
+psycopg2-binary
+pandas
+requests
