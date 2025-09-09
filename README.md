@@ -17,10 +17,10 @@
 * William Xavier (566449)
 
 **Tutores:**
-* Tutor: [Lucas Gomes]
+* Tutor: Lucas Gomes
 
 **Coordenadores:**
-* Coordenador: [André Godoi]
+* Coordenador: André Godoi
 
 ---
 ### Tópicos
