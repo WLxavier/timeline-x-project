@@ -14,7 +14,7 @@
 * João José Domingues Siva (RM564111)
 * Murílo Santana (RM565932)
 * William Ferreira (RM566537)
-* William Xavier (566449)
+* William Xavier (RM566449)
 
 **Tutores:**
 * Tutor: Lucas Gomes
