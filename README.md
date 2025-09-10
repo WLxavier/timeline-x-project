@@ -156,6 +156,6 @@ O modelo foi avaliado com os 20% restantes dos dados (conjunto de teste). O grá
 ---
 ## Vídeo de Apresentação do Projeto
 
-**[link do yt]**
+<a href="https://youtu.be/rIvn0YkytQc/">Video Timeline-X</a>
 
 ---
